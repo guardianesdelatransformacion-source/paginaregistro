@@ -139,7 +139,7 @@
   </div>
 
   <script defer>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxPI1tT7ITcHTRsc-YQsysJCQUInOjPoO7tQmf6N_aVcf1LkS6JHLmLMHgyiFj0YRYz/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8HaM6CCjNGKsyZGNJZnfuLN-bWa-Fwrc9FApKJR841D_n7Ebel5ltXIIOH4xNAfvJ/exec";
 
     const today = new Date().toISOString().slice(0, 10);
     document.getElementById("fechaEntrada").value = today;
@@ -177,15 +177,16 @@
     }
 
     function enviarADrive(data) {
-      fetch("https://script.google.com/macros/s/AKfycbwSNpffuajXHknrG24Fw0vWi70oRxZmvIzAwpuk7jlHgg6QCO1ONoPb_gldqY5l8_FH/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-      .then(res => res.json())
-      .then(result => console.log("Respuesta del servidor:", result))
-      .catch(err => console.error("Error al enviar a Google Sheets:", err));
-    }
+  fetch("https://script.google.com/macros/s/AKfycbx8HaM6CCjNGKsyZGNJZnfuLN-bWa-Fwrc9FApKJR841D_n7Ebel5ltXIIOH4xNAfvJ/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(result => console.log("Respuesta del servidor:", result))
+  .catch(err => console.error("Error al enviar a Google Sheets:", err));
+}
+
 
     document.getElementById("formEntrada").addEventListener("submit", e => {
       e.preventDefault();
