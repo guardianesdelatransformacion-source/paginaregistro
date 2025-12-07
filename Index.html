@@ -90,10 +90,7 @@
     }
   </style>
 
-  <!-- Scripts externos -->
-  <script defer data-domain="paginaregistro.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script>
-  <script defer src="https://tiiny.host/ad-script.js"></script>
-</head>
+  </head>
 
 <body>
   <div class="form-container">
@@ -198,7 +195,7 @@
 
     // Enviar datos a Google Sheets
     function enviarADrive(data) {
-      fetch("https://script.google.com/macros/s/AKfycbxyNkI86s4RnAgIooBWW4ah4A758lNxB_2lSzcP_ShcBYXNzuePcRzB5FKUTrDSHMSJ/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbziyqPMgWD_KRpp-sQuS4IgtdNkErOl1NN2XySN0Q6Uy09ZyD4ZH4da5hd9knVRRmLs/exec", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
