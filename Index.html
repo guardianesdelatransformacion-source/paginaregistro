@@ -89,8 +89,7 @@
       color: #333;
     }
   </style>
-
-  </head>
+</head>
 
 <body>
   <div class="form-container">
@@ -139,76 +138,57 @@
 
   </div>
 
-  <!-- Script principal -->
   <script defer>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxyNkI86s4RnAgIooBWW4ah4A758lNxB_2lSzcP_ShcBYXNzuePcRzB5FKUTrDSHMSJ/exec";
 
-    // Fecha actual
     const today = new Date().toISOString().slice(0, 10);
     document.getElementById("fechaEntrada").value = today;
     document.getElementById("fechaSalida").value = today;
+    document.getElementById("horaEntrada").value = new Date().toLocaleTimeString();
 
-	document.getElementById("horaEntrada").value = new Date().toLocaleTimeString();
-
-
-    // Obtener ubicación
     function obtenerUbicacion(idCampo) {
       const campo = document.getElementById(idCampo);
-
       if (!navigator.geolocation) {
         campo.value = "Geolocalización no soportada";
         return;
       }
-
       navigator.geolocation.getCurrentPosition(
-        pos => {
-          campo.value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
-        },
-        err => {
-          campo.value = "Error al obtener ubicación";
-          console.error(err); // ← CORREGIDO
-        },
+        pos => campo.value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`,
+        err => campo.value = "Error al obtener ubicación",
         { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
       );
     }
 
     obtenerUbicacion("ubicacionEntrada");
 
-    // Revisar si hay registro previo
     const registroGuardado = JSON.parse(localStorage.getItem("registroAsistencia"));
-
     if (registroGuardado && registroGuardado.fecha === today && registroGuardado.horaEntrada && !registroGuardado.horaSalida) {
       document.getElementById("entradaForm").classList.add("hidden");
       document.getElementById("salidaForm").classList.remove("hidden");
-
       document.getElementById("nombreSalida").value = registroGuardado.nombre;
       document.getElementById("horaSalida").value = new Date().toLocaleTimeString();
-
       obtenerUbicacion("ubicacionSalida");
     }
 
     if (registroGuardado && registroGuardado.fecha === today && registroGuardado.horaSalida) {
       document.getElementById("entradaForm").classList.add("hidden");
       document.getElementById("resultado").classList.remove("hidden");
-      document.getElementById("resultado").innerHTML =
-        `<h3>✅ Ya realizaste tu registro hoy (${today}).</h3>`;
+      document.getElementById("resultado").innerHTML = `<h3>✅ Ya realizaste tu registro hoy (${today}).</h3>`;
     }
 
-    // Enviar datos a Google Sheets
     function enviarADrive(data) {
-      fetch("https://script.google.com/macros/s/AKfycbziyqPMgWD_KRpp-sQuS4IgtdNkErOl1NN2XySN0Q6Uy09ZyD4ZH4da5hd9knVRRmLs/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbwSNpffuajXHknrG24Fw0vWi70oRxZmvIzAwpuk7jlHgg6QCO1ONoPb_gldqY5l8_FH/exec", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       })
-      .then(res => res.text())
+      .then(res => res.json())
       .then(result => console.log("Respuesta del servidor:", result))
       .catch(err => console.error("Error al enviar a Google Sheets:", err));
     }
 
-    // Registrar Entrada
     document.getElementById("formEntrada").addEventListener("submit", e => {
       e.preventDefault();
-
       const horaEntrada = new Date().toLocaleTimeString();
       document.getElementById("horaEntrada").value = horaEntrada;
 
@@ -221,35 +201,27 @@
       };
 
       enviarADrive(data);
-
       localStorage.setItem("registroAsistencia", JSON.stringify(data));
 
       document.getElementById("entradaForm").classList.add("hidden");
       document.getElementById("salidaForm").classList.remove("hidden");
-
       document.getElementById("nombreSalida").value = data.nombre;
       document.getElementById("horaSalida").value = new Date().toLocaleTimeString();
-
       obtenerUbicacion("ubicacionSalida");
     });
 
-    // Registrar Salida
     document.getElementById("formSalida").addEventListener("submit", e => {
       e.preventDefault();
-
       let registro = JSON.parse(localStorage.getItem("registroAsistencia"));
 
-      const horaSalida = new Date().toLocaleTimeString();
-      const ubicacionSalida = document.getElementById("ubicacionSalida").value;
-
-      registro.horaSalida = horaSalida;
-      registro.ubicacionSalida = ubicacionSalida;
+      registro.horaSalida = new Date().toLocaleTimeString();
+      registro.ubicacionSalida = document.getElementById("ubicacionSalida").value;
 
       const dataSalida = {
         nombre: registro.nombre,
         fecha: registro.fecha,
-        horaSalida,
-        ubicacionSalida,
+        horaSalida: registro.horaSalida,
+        ubicacionSalida: registro.ubicacionSalida,
         tipo: "salida"
       };
 
@@ -258,12 +230,10 @@
       let historial = JSON.parse(localStorage.getItem("historialAsistencia")) || [];
       historial.push(registro);
       localStorage.setItem("historialAsistencia", JSON.stringify(historial));
-
       localStorage.removeItem("registroAsistencia");
 
       document.getElementById("salidaForm").classList.add("hidden");
       document.getElementById("resultado").classList.remove("hidden");
-
       document.getElementById("resultado").innerHTML = `
         <h3>✅ Registro Completo</h3>
         <p><strong>Nombre:</strong> ${registro.nombre}</p>
@@ -274,11 +244,6 @@
         <p><strong>Ubicación Salida:</strong> ${registro.ubicacionSalida}</p>
       `;
     });
-
   </script>
 </body>
 </html>
-
-
-
-
